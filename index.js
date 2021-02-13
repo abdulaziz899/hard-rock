@@ -1,7 +1,21 @@
-//app: https://api.lyrics.ovh/suggest/:searchText
-//ly:https://api.lyrics.ovh/v1/:artist/:title
+
+// Get the input field
+var searchText = document.getElementById("searchText");
+
+// Execute a function when the user releases a key on the keyboard
+searchText.addEventListener("keyup", function(event) {
+  // Number 13 is the "Enter" key on the keyboard
+   if (event.keyCode === 13) {
+    // Cancel the default action, if needed
+        event.preventDefault();
+    // Trigger the button element with a click
+    document.getElementById("enterNow").click();
+  }
+});
+
 const searchSong=()=>{
     const searchText=document.getElementById('searchText').value;
+    displaySpinner();
     fetch(`https://api.lyrics.ovh/suggest/${searchText}`)
     .then(response=>response.json())
     .then(data=>displaySong(data.data))
@@ -10,6 +24,8 @@ const searchSong=()=>{
 }
 const displaySong=songs=>{
     console.log(songs);
+    const songDetailsDisplay=document.getElementById('songDetailsDisplay');
+    songDetailsDisplay.innerText='';
     const songShowDisplay=document.getElementById('songShowDisplay')
     songShowDisplay.innerHTML='';
         songs.forEach(song =>{
@@ -25,12 +41,12 @@ const displaySong=songs=>{
                 <audio controls src="${song.preview}"></audio>
             </div>`;
             songShowDisplay.appendChild(songDiv);
+            displaySpinner();
         })
     }
 const playSong = async(artist,title) => {
-    console.log(artist,title);
-    //const url=`https://api.lyrics.ovh/v1/${artist}/${title}`
     const url=`https://api.lyrics.ovh/v1/${artist}/${title}`;
+    displaySpinner();
     try{
         const response= await fetch(url);
         const data =await response.json();
@@ -44,9 +60,17 @@ const playSong = async(artist,title) => {
 const playSongDetails=data=>{
     const songDetailsDisplay=document.getElementById('songDetailsDisplay');
     songDetailsDisplay.innerText=data.lyrics;
+    displaySpinner();
+    
 }
 const displayError=error=>{
     const errorMessage=document.getElementById('errorMessage');
     errorMessage.innerText=error;
     
+}
+
+const displaySpinner=()=>{
+    const loadingSpinner= document.getElementById('loadingSpinner');
+
+    loadingSpinner.classList.toggle('d-none');
 }
